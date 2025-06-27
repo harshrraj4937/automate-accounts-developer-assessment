@@ -110,7 +110,7 @@ go run cmd/server.go
 ### Setup & Run
 
 ```bash
-cd web/app-upload 
+cd web/app-upload
 npm install
 npm start
 ```
