@@ -1,0 +1,158 @@
+# 🧾 Receipt Vault
+
+A full-stack application to upload scanned PDF receipts, validate and process them using OCR techniques, and view extracted receipt details. Built with **Golang + Gin + SQLite** on the backend and **React.js** on the frontend.
+
+---
+
+## 📁 Project Structure
+
+```
+├── README
+├── receipt-ocr-app
+│   ├── cmd
+│   │   └── server.go
+│   ├── constants
+│   │   └── query.go
+│   ├── controllers
+│   │   └── receipt_controller.go
+│   ├── database
+│   │   ├── init.go
+│   │   └── receipts.db
+│   ├── go.mod
+│   ├── go.sum
+│   ├── routes
+│   │   └── router.go
+│   ├── uploads
+│   │   ├── applebees_8267120140431.pdf
+│   │   ├── bart_20180908_004.pdf
+│   │   ├── bart_20180908_007.pdf
+│   │   ├── caltrain-425345423423.pdf
+│   │   ├── sliders-454353423425.pdf
+│   │   ├── sw_20181208_005.pdf
+│   │   └── venetian_434280912998.pdf
+│   └── utils
+└── web
+    └── app-upload
+        ├── package.json
+        ├── package-lock.json
+        ├── public
+        │   ├── favicon.ico
+        │   ├── index.html
+        │   ├── logo192.png
+        │   ├── logo512.png
+        │   ├── manifest.json
+        │   └── robots.txt
+        ├── README.md
+        └── src
+            ├── App.css
+            ├── App.js
+            ├── App.test.js
+            ├── index.css
+            ├── index.js
+            ├── logo.svg
+            ├── pages
+            │   ├── HomePage.jsx
+            │   ├── ReceiptDetail.jsx
+            │   ├── ReceiptsList.jsx
+            │   └── UploadFlow.jsx
+            ├── reportWebVitals.js
+            └── setupTests.js           # React frontend app
+```
+
+---
+
+## ⚙️ Tech Stack
+
+| Layer       | Tech                    |
+|-------------|-------------------------|
+| Frontend    | React.js, Axios         |
+| Backend     | Go (Gin Framework)      |
+| Database    | SQLite (`mattn/go-sqlite3`) |
+| OCR (Planned) | Tesseract / Dummy data |
+
+---
+
+## 🚀 Backend Setup (`/backend`)
+
+### Prerequisites:
+- Go 1.20+
+- SQLite3
+
+### Setup & Run
+
+```bash
+cd backend
+go mod tidy
+go run cmd/server.go
+```
+
+### Runs on: `http://localhost:8000`
+
+---
+
+### 🧩 Backend API Endpoints
+
+| Method | Endpoint            | Description                                 |
+|--------|---------------------|---------------------------------------------|
+| POST   | `/upload`           | Uploads a PDF receipt and stores metadata   |
+| POST   | `/validate`         | Validates if uploaded file is a proper PDF  |
+| POST   | `/process`          | Simulates OCR processing and stores data    |
+| GET    | `/receipts`         | Fetches all processed receipts              |
+| GET    | `/receipts/:id`     | Fetches details of a single receipt         |
+
+---
+
+## 💻 Frontend Setup (`/ui`)
+
+### Prerequisites:
+- Node.js 18+ recommended
+
+### Setup & Run
+
+```bash
+cd web/app-upload 
+npm install
+npm start
+```
+
+App runs at: `http://localhost:3000`
+
+Ensure your backend (`http://localhost:8000`) is running in parallel.
+
+---
+
+### 🖼️ Frontend Features
+
+- 🏠 Home page with navigation buttons
+- 📤 Upload PDF receipt
+- ✅ Validate file (must be a valid PDF)
+- 🧠 Process file (simulate OCR)
+- 📋 View all processed receipts
+- 🔍 View individual receipt details
+
+---
+
+## 📌 Example Flow
+
+1. Upload a PDF file
+2. Validate the file (PDF format check)
+3. Process the file (dummy OCR simulation)
+4. View the extracted data in a styled box
+5. Access receipts by ID or list view
+
+---
+
+## 🧠 Future Improvements
+
+- Integrate real OCR (e.g., Tesseract)
+- Add search/filter for receipts
+- Add user login/auth
+- Store files in cloud (S3, etc.)
+
+---
+
+## 📄 License
+
+This project is open-source and free to use.
+
+---
