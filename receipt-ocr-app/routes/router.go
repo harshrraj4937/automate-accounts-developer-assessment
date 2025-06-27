@@ -151,10 +151,10 @@ func CRUDRoutes(router *gin.Engine) {
 	router.POST("/process", func(c *gin.Context) {
 
 		var body struct {
-			FileID   int    `json:"file_id"`
-			FileName string `json:"file_name"`
+			FileID   int    `json:"file_id" binding:"required"`
+			FileName string `json:"file_name" binding:"required"`
 		}
-		if err := c.BindJSON(&body); err != nil {
+		if err := c.ShouldBindJSON(&body); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Invalid request body",
 			})
@@ -167,10 +167,10 @@ func CRUDRoutes(router *gin.Engine) {
 		var isProcessed bool
 
 		query := "SELECT file_path, is_valid, is_processed FROM receipt_file WHERE id = ? AND file_name = ?"
-		// fmt.Print(query)
-		err := database.DB.QueryRow(query, body.FileID, body.FileName).Scan(&filePath)
+		err := database.DB.QueryRow(query, body.FileID, body.FileName).Scan(&filePath, &isValid, &isProcessed)
 
 		if err != nil {
+			fmt.Print(err)
 			c.JSON(http.StatusNotFound, gin.H{
 				"error": "File not found in database",
 			})
