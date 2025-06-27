@@ -257,6 +257,78 @@ func CRUDRoutes(router *gin.Engine) {
 		})
 
 	})
+
+	router.GET("/receipts", func(c *gin.Context) {
+		rows, err := database.DB.Query("SELECT id, purchased_at, merchant_name, total_amount, file_path, created_at, updated_at FROM receipt")
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch receipts"})
+			return
+		}
+		defer rows.Close()
+		type Receipt struct {
+			ID           int     `json:"id"`
+			PurchasedAt  string  `json:"purchased_at"`
+			MerchantName string  `json:"merchant_name"`
+			TotalAmount  float64 `json:"total_amount"`
+			FilePath     string  `json:"file_path"`
+			CreatedAt    string  `json:"created_at"`
+			UpdatedAt    string  `json:"updated_at"`
+		}
+		var receipts []Receipt
+
+		for rows.Next() {
+			var r Receipt
+			err := rows.Scan(&r.ID, &r.PurchasedAt, &r.MerchantName, &r.TotalAmount, &r.FilePath, &r.CreatedAt, &r.UpdatedAt)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse receipt row"})
+				return
+			}
+			receipts = append(receipts, r)
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"receipts": receipts,
+		})
+	})
+
+	router.GET("/receipts/:id", func(c *gin.Context) {
+		// Get the ID from URL param
+		id := c.Param("id")
+
+		query := `
+		SELECT id, purchased_at, merchant_name, total_amount, file_path, created_at, updated_at
+		FROM receipt
+		WHERE id = ?
+	`
+
+		var receipt struct {
+			ID           int     `json:"id"`
+			PurchasedAt  string  `json:"purchased_at"`
+			MerchantName string  `json:"merchant_name"`
+			TotalAmount  float64 `json:"total_amount"`
+			FilePath     string  `json:"file_path"`
+			CreatedAt    string  `json:"created_at"`
+			UpdatedAt    string  `json:"updated_at"`
+		}
+
+		err := database.DB.QueryRow(query, id).Scan(
+			&receipt.ID,
+			&receipt.PurchasedAt,
+			&receipt.MerchantName,
+			&receipt.TotalAmount,
+			&receipt.FilePath,
+			&receipt.CreatedAt,
+			&receipt.UpdatedAt,
+		)
+
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Receipt not found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, receipt)
+	})
+
 }
 
 // this is a utility function so add it in the utility folder
