@@ -72,14 +72,20 @@ func UploadReceipt(c *gin.Context) {
 
 	now := time.Now().Format(time.RFC3339)
 
-	_, err = database.DB.Exec(constants.InsertIntoReceiptFile, file.Filename, filePath, now, now)
+	result, err := database.DB.Exec(constants.InsertIntoReceiptFile, file.Filename, filePath, now, now)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save metadata to database"})
+		return
+	}
+	fileID, err := result.LastInsertId()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch inserted file ID"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":   "File uploaded successfully",
+		"file_id":   fileID,
 		"file_name": file.Filename,
 		"file_path": filePath,
 	})
@@ -375,7 +381,7 @@ func GetReceiptById(c *gin.Context) {
 	var receipt struct {
 		ID           int     `json:"id"`
 		PurchasedAt  string  `json:"purchased_at"`
-		MerchantName string  `json:"metchant_name"`
+		MerchantName string  `json:"merchant_name"`
 		TotalAmount  float64 `json:"total_amount"`
 		FilePath     string  `json:"file_path"`
 		CreatedAt    string  `json:"created_at"`
